@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Booking</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .bill-section {
+            display: none;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    
+    <button onclick="window.location.href='carAvailability.html';">View Car Availability Page</button>
+    <button onclick="window.location.href='driverAvailability.html';">View Driver Availability Page</button>
+
+    <div class="container">
+        <h2 class="text-center">Add New Booking</h2>
+        <form id="bookingForm">
+            <div class="form-group">
+                <label for="user-id">User ID</label>
+                <input type="text" id="user-id" class="form-control" value="1" readonly>
+            </div>
+            <div class="form-group">
+                <label for="customer-name">Customer Name</label>
+                <input type="text" id="customer-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="pickup-location">Pickup Location</label>
+                <select id="pickup-location" class="form-control" required>
+                    <option value="" disabled selected>Select Pickup Location</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="drop-location">Drop Location</label>
+                <select id="drop-location" class="form-control" required>
+                    <option value="" disabled selected>Select Drop Location</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="car">Car</label>
+                <select id="car" class="form-control" required>
+                    <option value="" disabled selected>Select Car</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="driver">Driver</label>
+                <select id="driver" class="form-control" required>
+                    <option value="" disabled selected>Select Driver</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="price-per-km">Price per Km</label>
+                <input type="text" id="price-per-km" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label for="total-price">Total Price</label>
+                <input type="text" id="total-price" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="add-btn">Add Booking</button>
+                <button type="reset" class="btn btn-secondary" id="clear-btn">Clear</button>
+                <button type="button" class="btn btn-success" id="print-btn">Print Bill</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bill Section -->
+    <div class="bill-section" id="bill-section">
+        <h3>Booking Bill</h3>
+        <p><strong>Customer Name:</strong> <span id="bill-customer-name"></span></p>
+        <p><strong>Email:</strong> <span id="bill-email"></span></p>
+        <p><strong>Pickup Location:</strong> <span id="bill-pickup-location"></span></p>
+        <p><strong>Drop Location:</strong> <span id="bill-drop-location"></span></p>
+        <p><strong>Car:</strong> <span id="bill-car"></span></p>
+        <p><strong>Driver:</strong> <span id="bill-driver"></span></p>
+        <p><strong>Price per Km:</strong> <span id="bill-price-per-km"></span></p>
+        <p><strong>Total Price:</strong> <span id="bill-total-price"></span></p>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Retrieve the userId from sessionStorage and set it in the form
+            const userId = sessionStorage.getItem('userId');
+            if (userId) {
+                $('#user-id').val(userId);  // Set the user ID from session storage
+            } else {
+                // Handle the case when user is not logged in or session expired
+                alert("Please login first.");
+                window.location.href = "userlogin-register.html";  // Redirect to login page
+            }
+            
+            // Fetching distances data
+            $.get('http://localhost:8080/mavenproject6/resources/distances', function (data) {
+                let pickupOptions = '';
+                let dropOptions = '';
+                data.forEach(item => {
+                    pickupOptions += `<option value="${item.distanceId}" data-distance="${item.distanceKm}">${item.pickupLocation}</option>`;
+                    dropOptions += `<option value="${item.distanceId}">${item.dropLocation}</option>`;
+                });
+                $('#pickup-location').html(`<option value="" disabled selected>Select Pickup Location</option>${pickupOptions}`);
+                $('#drop-location').html(`<option value="" disabled selected>Select Drop Location</option>${dropOptions}`);
+            });
+
+            // Fetching car options
+            $.get('http://localhost:8080/mavenproject6/resources/cars', function (data) {
+                let carOptions = '';
+                data.forEach(item => {
+                    carOptions += `<option value="${item.carId}" data-price="${item.pricePerKm}">${item.model} (${item.make})</option>`;
+                });
+                $('#car').html(`<option value="" disabled selected>Select Car</option>${carOptions}`);
+            });
+            
+            // Fetching drivers data
+            $.get('http://localhost:8080/mavenproject6/resources/drivers', function (data) {
+                let driverOptions = '';
+                data.forEach(item => {
+                    driverOptions += `<option value="${item.driverId}">${item.driverName}</option>`;
+                });
+                $('#driver').html(`<option value="" disabled selected>Select Driver</option>${driverOptions}`);
+            });
+            
+            // When car or locations are selected, calculate price per km and total price
+            $('#pickup-location, #drop-location, #car').change(function () {
+                const carId = $('#car').val();
+                const pickupId = $('#pickup-location').val();
+                const dropId = $('#drop-location').val();
+
+                if (carId && pickupId && dropId) {
+                    const carPrice = $('#car option:selected').data('price');
+                    const distanceKm = $('#pickup-location option:selected').data('distance');
+                    const totalPrice = carPrice * distanceKm;
+
+                    $('#price-per-km').val(carPrice);
+                    $('#total-price').val(totalPrice.toFixed(2));
+                }
+            });
+
+            // Add booking button functionality
+            $('#add-btn').click(function () {
+                const userId = $('#user-id').val(); // Get userId from form
+                const customerName = $('#customer-name').val();
+                const email = $('#email').val();
+                const pickupLocation = $('#pickup-location option:selected').text();
+                const dropLocation = $('#drop-location option:selected').text();
+                const driverId = $('#driver').val();
+                const carId = $('#car').val();
+                const pricePerKm = $('#price-per-km').val();
+                const distanceId = $('#pickup-location').val();
+
+                const bookingData = {
+                    userId,
+                    customerName,
+                    email,
+                    pickupLocation,
+                    dropLocation,
+                    driverId,
+                    carId,
+                    pricePerKm,
+                    distanceId
+                };
+
+                $.ajax({
+                    url: 'http://localhost:8080/mavenproject6/resources/bookings',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(bookingData),
+                    success: function (response) {
+                        alert('Booking added successfully!');
+                        $('#bookingForm')[0].reset();
+                    },
+                    error: function () {
+                        alert('Error adding booking!');
+                    }
+                });
+            });
+
+            // Clear button functionality
+            $('#clear-btn').click(function () {
+                $('#bookingForm')[0].reset();
+            });
+
+            // Print bill functionality
+            $('#print-btn').click(function () {
+                // Set the data for the bill
+                $('#bill-customer-name').text($('#customer-name').val());
+                $('#bill-email').text($('#email').val());
+                $('#bill-pickup-location').text($('#pickup-location option:selected').text());
+                $('#bill-drop-location').text($('#drop-location option:selected').text());
+                $('#bill-car').text($('#car option:selected').text());
+                $('#bill-driver').text($('#driver option:selected').text());
+                $('#bill-price-per-km').text($('#price-per-km').val());
+                $('#bill-total-price').text($('#total-price').val());
+
+                // Show the bill section
+                $('#bill-section').show();
+
+                // Print the bill
+                window.print();
+            });
+        });
+    </script>
+
+</body>
+</html>

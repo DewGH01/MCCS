@@ -1,0 +1,16 @@
+com\mainactivity\mavenproject6\resources\JakartaEE8Resource.class
+db\Contact.class
+com\mainactivity\mavenproject6\resources\DriverService.class
+com\mainactivity\mavenproject6\resources\ContactService.class
+db\User.class
+com\mainactivity\mavenproject6\resources\BookingService.class
+db\Booking.class
+db\DBUtils$CarService_JerseyClient.class
+db\Distance.class
+db\Driver.class
+com\mainactivity\mavenproject6\resources\CarService.class
+com\mainactivity\mavenproject6\resources\DistanceService.class
+com\mainactivity\mavenproject6\resources\UserService.class
+db\Car.class
+com\mainactivity\mavenproject6\JakartaRestConfiguration.class
+db\DBUtils.class
