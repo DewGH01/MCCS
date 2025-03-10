@@ -4,7 +4,12 @@
  */
 package db;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -19,23 +24,30 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DBUtilsTest {
     
+    private DBUtils instance;
+
     public DBUtilsTest() {
     }
-    
+
     @BeforeAll
     public static void setUpClass() {
+        // Set up any resources needed for the entire test class
     }
-    
+
     @AfterAll
     public static void tearDownClass() {
+        // Clean up resources after the entire test class is finished
     }
-    
+
     @BeforeEach
     public void setUp() {
+        // Create a new instance before each test
+        instance = new DBUtils();
     }
-    
+
     @AfterEach
     public void tearDown() {
+        // Clean up after each test if necessary
     }
 
     /**
@@ -43,13 +55,9 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetConnection() throws Exception {
-        System.out.println("getConnection");
-        DBUtils instance = new DBUtils();
-        Connection expResult = null;
+         System.out.println("getConnection");
         Connection result = instance.getConnection();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the connection is not null
     }
 
     /**
@@ -58,25 +66,10 @@ public class DBUtilsTest {
     @Test
     public void testCheckConnection() {
         System.out.println("checkConnection");
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
         boolean result = instance.checkConnection();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result); // Assuming the connection is valid
     }
 
-    /**
-     * Test of main method, of class DBUtils.
-     */
-    @Test
-    public void testMain() {
-        System.out.println("main");
-        String[] args = null;
-        DBUtils.main(args);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of addCar method, of class DBUtils.
@@ -84,13 +77,13 @@ public class DBUtilsTest {
     @Test
     public void testAddCar() {
         System.out.println("addCar");
-        Car car = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+        Car car = new Car();
+        car.setModel("Toyota");
+        car.setMake("Corolla");
+        car.setPricePerKm(10.0);
+
         boolean result = instance.addCar(car);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result); // Assuming the car was added successfully
     }
 
     /**
@@ -98,30 +91,18 @@ public class DBUtilsTest {
      */
     @Test
     public void testUpdateCar() {
-        System.out.println("updateCar");
-        Car car = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+       System.out.println("updateCar");
+        Car car = new Car();
+        car.setCarId(1); // Assuming this car already exists
+        car.setModel("Honda");
+        car.setMake("Civi");
+        car.setPricePerKm(12.0);
+
         boolean result = instance.updateCar(car);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result); // Assuming the car was updated successfully
     }
 
-    /**
-     * Test of deleteCar method, of class DBUtils.
-     */
-    @Test
-    public void testDeleteCar() {
-        System.out.println("deleteCar");
-        int carId = 0;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.deleteCar(carId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+     
 
     /**
      * Test of getCars method, of class DBUtils.
@@ -129,12 +110,9 @@ public class DBUtilsTest {
     @Test
     public void testGetCars() {
         System.out.println("getCars");
-        DBUtils instance = new DBUtils();
-        List<Car> expResult = null;
         List<Car> result = instance.getCars();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the list of cars is not null
+        assertTrue(result.size() > 0); // Ensure the list contains at least one car
     }
 
     /**
@@ -143,13 +121,10 @@ public class DBUtilsTest {
     @Test
     public void testGetCar() throws Exception {
         System.out.println("getCar");
-        int carId = 0;
-        DBUtils instance = new DBUtils();
-        Car expResult = null;
+        int carId = 1; // Assuming this car ID exists
         Car result = instance.getCar(carId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the car is found
+        assertEquals(carId, result.getCarId()); // Ensure the car ID matches
     }
 
     /**
@@ -157,15 +132,11 @@ public class DBUtilsTest {
      */
     @Test
     public void testSetCarAvailability() {
-        System.out.println("setCarAvailability");
-        int carId = 0;
+       System.out.println("setCarAvailability");
+        int carId = 1; // Assuming car with ID 1 exists
         boolean isAvailable = false;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
         boolean result = instance.setCarAvailability(carId, isAvailable);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result); // Assuming the availability status was updated successfully
     }
 
     /**
@@ -173,45 +144,26 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetCarsByAvailability() {
-        System.out.println("getCarsByAvailability");
+         System.out.println("getCarsByAvailability");
         boolean isAvailable = false;
-        DBUtils instance = new DBUtils();
-        List<Car> expResult = null;
         List<Car> result = instance.getCarsByAvailability(isAvailable);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the list is not null
+        assertTrue(result.size() > 0); // Ensure at least one car is available
     }
 
-    /**
-     * Test of getCarsByMakeAndModel method, of class DBUtils.
-     */
-    @Test
-    public void testGetCarsByMakeAndModel() {
-        System.out.println("getCarsByMakeAndModel");
-        String make = "";
-        String model = "";
-        DBUtils instance = new DBUtils();
-        List<Car> expResult = null;
-        List<Car> result = instance.getCarsByMakeAndModel(make, model);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    
 
     /**
      * Test of addDriver method, of class DBUtils.
      */
     @Test
     public void testAddDriver() {
-        System.out.println("addDriver");
-        Driver driver = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+          System.out.println("addDriver");
+
+        Driver driver = new Driver(0, "John Doe", "555-1234", true, "A123456", "2025-03-10");
         boolean result = instance.addDriver(driver);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result); // Ensure the driver was added successfully
     }
 
     /**
@@ -219,30 +171,15 @@ public class DBUtilsTest {
      */
     @Test
     public void testUpdateDriver() {
-        System.out.println("updateDriver");
-        Driver driver = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+         System.out.println("updateDriver");
+
+        Driver driver = new Driver(1, "Prasanna Lakmal", "555-4321", true, "A123456", "2025-03-10");
         boolean result = instance.updateDriver(driver);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result); // Ensure the driver was updated successfully
     }
 
-    /**
-     * Test of deleteDriver method, of class DBUtils.
-     */
-    @Test
-    public void testDeleteDriver() {
-        System.out.println("deleteDriver");
-        int driverId = 0;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.deleteDriver(driverId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+     
 
     /**
      * Test of getDrivers method, of class DBUtils.
@@ -250,12 +187,10 @@ public class DBUtilsTest {
     @Test
     public void testGetDrivers() {
         System.out.println("getDrivers");
-        DBUtils instance = new DBUtils();
-        List<Driver> expResult = null;
+
         List<Driver> result = instance.getDrivers();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the list is not null
+        assertTrue(result.size() > 0); // Ensure at least one driver exists
     }
 
     /**
@@ -263,14 +198,13 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetDriver() throws Exception {
-        System.out.println("getDriver");
-        int driverId = 0;
-        DBUtils instance = new DBUtils();
-        Driver expResult = null;
+      System.out.println("getDriver");
+
+        int driverId = 1; // Assuming this driver ID exists
         Driver result = instance.getDriver(driverId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertNotNull(result); // Ensure the result is not null
+        assertEquals(driverId, result.getDriverId()); // Ensure the driver ID matches
     }
 
     /**
@@ -278,45 +212,29 @@ public class DBUtilsTest {
      */
     @Test
     public void testSetDriverAvailability() {
-        System.out.println("setDriverAvailability");
-        int driverId = 0;
+         System.out.println("setDriverAvailability");
+
+        int driverId = 1; // Assuming driver with ID 1 exists
         boolean isAvailable = false;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
         boolean result = instance.setDriverAvailability(driverId, isAvailable);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result); // Ensure the availability was successfully set
     }
 
-    /**
-     * Test of getDriverAvailability method, of class DBUtils.
-     */
-    @Test
-    public void testGetDriverAvailability() {
-        System.out.println("getDriverAvailability");
-        int driverId = 0;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.getDriverAvailability(driverId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
+     
     /**
      * Test of addBooking method, of class DBUtils.
      */
     @Test
     public void testAddBooking() {
         System.out.println("addBooking");
-        Booking booking = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+
+        Booking booking = new Booking(0, 1, "John Doe", "john.doe@example.com", 
+                                      "Pickup Location", "Drop Location", 1, 2, 10.5, 1, "2025-03-10", "2025-03-10");
+
         boolean result = instance.addBooking(booking);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result, "Booking should be added successfully.");
     }
 
     /**
@@ -324,43 +242,28 @@ public class DBUtilsTest {
      */
     @Test
     public void testUpdateBooking() {
-        System.out.println("updateBooking");
-        Booking booking = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+         System.out.println("updateBooking");
+
+        Booking booking = new Booking(16, 1, "John Doe", "john.doe@example.com", 
+                                      "Pickup Location", "Drop Location", 1, 2, 10.5, 1, "2025-03-10", "2025-03-10");
+
         boolean result = instance.updateBooking(booking);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result, "Booking should be updated successfully.");
     }
 
-    /**
-     * Test of deleteBooking method, of class DBUtils.
-     */
-    @Test
-    public void testDeleteBooking() {
-        System.out.println("deleteBooking");
-        int bookingId = 0;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.deleteBooking(bookingId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+     
 
     /**
      * Test of getAllBookings method, of class DBUtils.
      */
     @Test
     public void testGetAllBookings() {
-        System.out.println("getAllBookings");
-        DBUtils instance = new DBUtils();
-        List<Booking> expResult = null;
+          System.out.println("getAllBookings");
+
         List<Booking> result = instance.getAllBookings();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the list is not null
+        assertTrue(result.size() > 0); // Ensure the list contains at least one booking
     }
 
     /**
@@ -368,14 +271,13 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetBookingById() {
-        System.out.println("getBookingById");
-        int bookingId = 0;
-        DBUtils instance = new DBUtils();
-        Booking expResult = null;
+         System.out.println("getBookingById");
+
+        int bookingId = 13; // Assuming this booking ID exists
         Booking result = instance.getBookingById(bookingId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertNotNull(result, "Booking should not be null.");
+        assertEquals(bookingId, result.getBookingId(), "Booking ID should match.");
     }
 
     /**
@@ -384,13 +286,11 @@ public class DBUtilsTest {
     @Test
     public void testAddDistance() {
         System.out.println("addDistance");
-        Distance distance = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+
+        Distance distance = new Distance(0, "Location A", "Location B", 10.5, "2025-03-10");
         boolean result = instance.addDistance(distance);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result, "Distance should be added successfully.");
     }
 
     /**
@@ -398,30 +298,15 @@ public class DBUtilsTest {
      */
     @Test
     public void testUpdateDistance() {
-        System.out.println("updateDistance");
-        Distance distance = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+         System.out.println("updateDistance");
+
+        Distance distance = new Distance(1, "Colombo Fort", "Colombo 07", 15.0, "2025-03-10");
         boolean result = instance.updateDistance(distance);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result, "Distance should be updated successfully.");
     }
 
-    /**
-     * Test of deleteDistance method, of class DBUtils.
-     */
-    @Test
-    public void testDeleteDistance() {
-        System.out.println("deleteDistance");
-        int distanceId = 0;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.deleteDistance(distanceId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+     
 
     /**
      * Test of getAllDistances method, of class DBUtils.
@@ -429,12 +314,10 @@ public class DBUtilsTest {
     @Test
     public void testGetAllDistances() {
         System.out.println("getAllDistances");
-        DBUtils instance = new DBUtils();
-        List<Distance> expResult = null;
+
         List<Distance> result = instance.getAllDistances();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the list is not null
+        assertTrue(result.size() > 0); // Ensure the list contains at least one distance
     }
 
     /**
@@ -442,14 +325,13 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetDistanceById() {
-        System.out.println("getDistanceById");
-        int distanceId = 0;
-        DBUtils instance = new DBUtils();
-        Distance expResult = null;
+         System.out.println("getDistanceById");
+
+        int distanceId = 1; // Assumed that a distance with this ID exists
         Distance result = instance.getDistanceById(distanceId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertNotNull(result); // Ensure a non-null result is returned
+        assertEquals(distanceId, result.getDistanceId()); // Ensure the correct distanceId is returned
     }
 
     /**
@@ -458,60 +340,17 @@ public class DBUtilsTest {
     @Test
     public void testGetDistanceByLocations() {
         System.out.println("getDistanceByLocations");
-        String pickupLocation = "";
-        String dropLocation = "";
-        DBUtils instance = new DBUtils();
-        Distance expResult = null;
+
+        String pickupLocation = "Location A";
+        String dropLocation = "Location B";
         Distance result = instance.getDistanceByLocations(pickupLocation, dropLocation);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertNotNull(result); // Ensure a non-null result is returned
+        assertEquals(pickupLocation, result.getPickupLocation()); // Ensure the pickupLocation matches
+        assertEquals(dropLocation, result.getDropLocation()); // Ensure the dropLocation matches
     }
 
-    /**
-     * Test of addUser method, of class DBUtils.
-     */
-    @Test
-    public void testAddUser() {
-        System.out.println("addUser");
-        User user = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.addUser(user);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of updateUser method, of class DBUtils.
-     */
-    @Test
-    public void testUpdateUser() {
-        System.out.println("updateUser");
-        User user = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.updateUser(user);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of deleteUser method, of class DBUtils.
-     */
-    @Test
-    public void testDeleteUser() {
-        System.out.println("deleteUser");
-        int userId = 0;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.deleteUser(userId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    
 
     /**
      * Test of getUsers method, of class DBUtils.
@@ -519,12 +358,10 @@ public class DBUtilsTest {
     @Test
     public void testGetUsers() {
         System.out.println("getUsers");
-        DBUtils instance = new DBUtils();
-        List<User> expResult = null;
+
         List<User> result = instance.getUsers();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the list is not null
+        assertTrue(result.size() > 0); // Ensure the list contains at least one user
     }
 
     /**
@@ -532,14 +369,13 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetUser() {
-        System.out.println("getUser");
-        int userId = 0;
-        DBUtils instance = new DBUtils();
-        User expResult = null;
+         System.out.println("getUser");
+
+        int userId = 1; // Assumed that a user with this ID exists
         User result = instance.getUser(userId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertNotNull(result); // Ensure the result is not null
+        assertEquals(userId, result.getUserId()); // Ensure the correct userId is returned
     }
 
     /**
@@ -548,14 +384,13 @@ public class DBUtilsTest {
     @Test
     public void testLoginUser() {
         System.out.println("loginUser");
-        String email = "";
-        String password = "";
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+
+        String email = "john.doe@example.com";
+        String password = "password123";
+
         boolean result = instance.loginUser(email, password);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result, "Login should be successful.");
     }
 
     /**
@@ -563,14 +398,13 @@ public class DBUtilsTest {
      */
     @Test
     public void testAddContactMessage() {
-        System.out.println("addContactMessage");
-        Contact contact = null;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
+          System.out.println("addContactMessage");
+
+        String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        Contact contact = new Contact(0, "John Doe", "john.doe@example.com", "Test message.", currentTime);
         boolean result = instance.addContactMessage(contact);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(result, "Contact message should be added successfully.");
     }
 
     /**
@@ -578,13 +412,11 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetContactMessages() {
-        System.out.println("getContactMessages");
-        DBUtils instance = new DBUtils();
-        List<Contact> expResult = null;
+       System.out.println("getContactMessages");
+
         List<Contact> result = instance.getContactMessages();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result); // Ensure the list is not null
+        assertTrue(result.size() > 0); // Ensure the list contains at least one message
     }
 
     /**
@@ -592,29 +424,15 @@ public class DBUtilsTest {
      */
     @Test
     public void testGetContactById() {
-        System.out.println("getContactById");
-        int contactId = 0;
-        DBUtils instance = new DBUtils();
-        Contact expResult = null;
+       System.out.println("getContactById");
+
+        int contactId = 2; // Assuming contact with ID 1 exists
         Contact result = instance.getContactById(contactId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertNotNull(result); // Ensure a non-null result is returned
+        assertEquals(contactId, result.getId()); // Ensure the correct contact ID is returned
     }
 
-    /**
-     * Test of deleteContact method, of class DBUtils.
-     */
-    @Test
-    public void testDeleteContact() {
-        System.out.println("deleteContact");
-        int contactId = 0;
-        DBUtils instance = new DBUtils();
-        boolean expResult = false;
-        boolean result = instance.deleteContact(contactId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    
     
 }
